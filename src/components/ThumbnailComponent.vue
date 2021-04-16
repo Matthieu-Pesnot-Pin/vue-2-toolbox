@@ -1,19 +1,19 @@
 <template>
   <div>
-    <transition name="vignette">
+    <transition name="Thumbnail">
       <div
-        class="composant-vignette"
+        class="composant-Thumbnail"
         v-if="visible"
         :class="computedClass"
         :style="`width: ${width};`"
-        @click="$emit('visibility', false)"
+        @click="hideThumbnail"
       >
-        <div v-html="texteVignette" class="texte-vignette"></div>
+        <div v-html="content" class="texte-Thumbnail"></div>
         <div
           v-if="closeCross"
           class="frame-croix element-clickable"
           title="fermer"
-          @click="$emit('visibility', false)"
+          @click="hideThumbnail"
         >
           ✖️
         </div> 
@@ -26,7 +26,7 @@
 
 <script>
 export default {
-  name: "ComposantVignette",
+  name: "ComposantThumbnail",
   model: {
     prop: "visible",
     event: "visibility",
@@ -37,14 +37,14 @@ export default {
     };
   },
   props: {
+    content: { type: String, default: "..." },
+    visible: { default: true }, // visibility
+    autoHide: { default: false }, // to use auto hide, v-model with a boolean for visibility must exist in parent component
     autoHideTime: { default: 5000 }, // // sets timeout before close in ms
-    closeCross: { type: Boolean, default: false }, //displays cross on the upper right
-    autoHide: { type: Boolean, default: false }, // to use auto hide, v-model with a boolean for visibility must exist in parent component
-    visible: { type: Boolean, default: true },
-    position: { type: String, default: "right" }, // right, left, centered, always on bottom
-    texteVignette: { type: String, default: "..." },
-    typeVignette: { type: String, default: "neutral" }, // neutral, success, error
-    detailsButton: { type: Boolean, default: false},
+    closeCross: { default: false }, //displays cross on the right to close thumbnail
+    position: { type: String, default: "right" }, // right, left, centered available, thumbnail will always be on the bottom of th screen
+    thumbnailType: { type: String, default: "neutral" }, // neutral, success, error - changes the background color
+    detailsButton: { default: false },
     width: { default: "auto" },
   },
   methods: {
@@ -56,20 +56,24 @@ export default {
         }, this.autoHideTime);
       }
     },
+    hideThumbnail() {
+      console.log("Here");
+      this.$emit('visibility', false)
+    }
   },
   computed: {
     computedClass() {
-      return this.position + " " + this.typeVignette;
+      return this.position + " " + this.thumbnailType;
     },
   },
   watch: {
     visible() {
       this.setTimerBeforeClose();
     },
-    texteVignette() {
+    content() {
       this.setTimerBeforeClose();
     },
-    typeVignette() {
+    thumbnailType() {
       this.setTimerBeforeClose();
     },
   },
@@ -77,8 +81,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "src/assets/css/components.scss";
-.composant-vignette {
+$border-color: #000;
+$neutral-background: #CCC;
+$font-color: #000;
+$success-background-color: rgb(144, 255, 144);
+$error-background-color: rgb(255, 160, 160);
+
+.composant-Thumbnail {
   cursor: default;
   max-width: 400px;
   z-index: 100;
@@ -90,26 +99,25 @@ export default {
   bottom: 3vh;
   border-radius: 15px;
   padding: 15px 15px 15px 15px;
-  box-shadow: 0 5px 10px 0 $opacity-25;
-  border: 1px solid $couleur-texte-fonce;
+  box-shadow: 0 5px 10px 0 rgba(1, 1, 1, 0.4);
+  border: 1px solid $border-color;
 
   &.neutral {
-    background-color: $couleur-fond-menu-navigation;
+    background-color: $neutral-background;
   }
   &.success {
-    background-color: rgb(144, 255, 144);
+    background-color: $success-background-color;
   }
   &.error {
-    background-color: rgb(255, 160, 160);
+    background-color: $error-background-color;
   }
-
   &.right {
     right: 50px;
   }
   &.left {
     left: 50px;
   }
-  &.centered {
+  &.center {
     left: 50%;
     -webkit-transform: translateX(-50%);
     -moz-transform: translateX(-50%);
@@ -119,7 +127,7 @@ export default {
   }
 }
 
-.texte-vignette {
+.texte-Thumbnail {
   width: 100%;
   text-align: center;
 }
@@ -130,28 +138,27 @@ export default {
   top: 0px;
   font-size: 0.8em;
 }
-.vignette {
-  @include typo-small-medium;
-  color: black;
+.Thumbnail {
+  // @include typo-small-medium;
+  color: $font-color;
   font-weight: normal;
 }
 .get-details {
   position: relative;
-  // font-size: 1em;
   font-weight: 700;
   margin-left: 5px;
   bottom: 1px;
 }
 
-.vignette-enter,
-.vignette-leave-to {
+.Thumbnail-enter,
+.Thumbnail-leave-to {
   visibility: hidden;
   bottom: -100px;
   opacity: 0;
 }
 
-.vignette-enter-active,
-.vignette-leave-active {
+.Thumbnail-enter-active,
+.Thumbnail-leave-active {
   transition: all 0.5s;
 }
 </style>
