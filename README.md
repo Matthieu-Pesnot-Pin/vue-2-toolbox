@@ -15,7 +15,7 @@ Available now:
     - detailsButton - default: false
     - width - default: "auto" 
 
-All of theses are vue component files. To use them in your project, simply copy the file in your components folder and import it.
+All of these are vue component files. To use them in your project, simply copy the file in your components folder and import it.
 
 Just download the files and run 'npm run serve' to test it
 
