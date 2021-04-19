@@ -7,11 +7,11 @@
         <input 
             type="checkbox" 
             v-model="privateChecked" 
-            :id="'checkbox-' + labelComputed + '-' + idSalt()" 
+            :id="idComputed" 
             @change="update"
             :disabled="disabled"
         >
-        <label :for="'checkbox-' + labelComputed + '-' + idSalt()">{{ label }}</label>
+        <label :for="idComputed">{{ label }}</label>
     </div>
 </template>
 
@@ -20,7 +20,7 @@ export default {
     name: 'ComposantCheckbox',
     model: {
         prop: 'checked',
-        event: 'update'
+        event: 'change'
     },
     data: ()=>{
         return { 
@@ -36,11 +36,14 @@ export default {
     computed: {
         labelComputed() {
             return this.label.replace(/ /g, '-')
+        },
+        idComputed() {
+            return 'checkbox-' + this.labelComputed + '-' + this.idSalt()
         }
     },
     methods: {
         update(){
-            this.$emit('update', this.privateChecked);
+            this.$emit('change', this.privateChecked);
         },
         idSalt() {
             if (this.salt == undefined) this.salt = Math.round(Math.random()*1000000)
@@ -54,6 +57,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$backGroundColor: #FFF;
+
 .option {
   & label {
     margin-top: auto;
@@ -62,11 +67,33 @@ export default {
   display: flex;
   align-items: center;
   justify-content: left;
-  width: 100%;
-  margin-bottom: 20px;
+  height: 100%;
 }
 
 input[type="checkbox"] {
+    
   margin-right: 15px;
 }
+
+.infobulle {
+  position: relative;
+  cursor: help;
+}
+/* on génère un élément :after lors du survol et du focus :*/
+.infobulle:hover::after{
+  text-align: center;
+  content: attr(bulle-content); 
+  background-color: $backGroundColor;
+  padding: 5px;
+  border-radius: 15px;
+  box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.4);
+  min-width: 250px; 
+  max-width: 400px;
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%); /* on centre horizontalement  */
+  z-index: 1; /* pour s'afficher au dessus des éléments en position relative */
+}
+
 </style>

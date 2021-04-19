@@ -11,13 +11,13 @@
         <div v-html="content" class="texte-Thumbnail"></div>
         <div
           v-if="closeCross"
-          class="frame-croix element-clickable"
+          class="frame-croix clickable"
           title="fermer"
           @click="hideThumbnail"
         >
           ✖️
         </div> 
-        <div v-if="detailsButton" class="get-details element-clickable" title="détails" @click.stop="$emit('details-click')">ℹ️</div>
+        <div v-if="detailsButton" class="get-details clickable" title="détails" @click.stop="$emit('details-click')">ℹ️</div>
 
       </div>
     </transition>
@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     computedClass() {
-      return this.position + " " + this.thumbnailType;
+      return this.position + " " + this.thumbnailType.toLowerCase();
     },
   },
   watch: {
@@ -160,5 +160,16 @@ $error-background-color: rgb(255, 160, 160);
 .Thumbnail-enter-active,
 .Thumbnail-leave-active {
   transition: all 0.5s;
+}
+
+.clickable {
+  padding: 3px;
+  &:hover{
+    transition-property: background-color;
+    transition-duration: 300ms;
+    border-radius: 15px;
+    background-color: rgb(218, 219, 231);
+    cursor: pointer;
+  }
 }
 </style>

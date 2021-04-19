@@ -1,47 +1,51 @@
 <template>
-    <div
-        v-if="!editionMode" 
-        v-html="contenuMisEnForme"
-        class="content"
-        @dblclick="makeItEditable('dblClick')"
-        @click="makeItEditable('singleClick')"
-    >
+    <div class='editable-field'>
+        <div class="label" v-html="label"></div>
+        <div
+            v-if="!editionMode" 
+            v-html="contenuMisEnForme"
+            class="content"
+            :class="computedClass"
+            @dblclick="makeItEditable('dblClick')"
+            @click="makeItEditable('singleClick')"
+        >
+        </div>
+        <select 
+            v-else-if="format=='select'" 
+            ref='input'
+            class="content" 
+            name="labelList" 
+            id="labelList"
+            @change="synchroVmodel(true)"
+            v-model="privateContent"
+            @blur="synchroVmodel(saveOnBlur)"
+        >
+            <option v-for="(option, index) of selectList" :value="option" :key="index">{{ option }}</option>
+        </select>
+        <textarea
+            v-else-if="format=='textarea'" 
+            ref='input'
+            class="content" 
+            v-model="privateContent"
+            @keypress.enter.exact="synchroVmodel(true)"
+            @keydown.esc="synchroVmodel(false)"
+            @blur="synchroVmodel(saveOnBlur)"
+            style="width: 100%;"
+            :rows="rowsNumber"
+        >
+        </textarea>
+        <input 
+            v-else
+            ref='input'
+            class="content input"
+            :type="typeComputed"
+            :maxlength="length"
+            v-model="privateContent"
+            @keydown.esc="synchroVmodel(false)"
+            @keypress.enter="synchroVmodel(true)"
+            @blur="synchroVmodel(saveOnBlur)"
+        />
     </div>
-    <select 
-        v-else-if="format=='select'" 
-        ref='input'
-        class="content" 
-        name="labelList" 
-        id="labelList"
-        @change="synchroVmodel(true)"
-        v-model="privateContent"
-        @blur="synchroVmodel(saveOnBlur)"
-    >
-        <option v-for="(option, index) of selectList" :value="option" :key="index">{{ option }}</option>
-    </select>
-    <textarea
-        v-else-if="format=='textarea'" 
-        ref='input'
-        class="content" 
-        v-model="privateContent"
-        @keypress.enter.exact="synchroVmodel(true)"
-        @keydown.esc="synchroVmodel(false)"
-        @blur="synchroVmodel(saveOnBlur)"
-        style="width: 100%;"
-        :rows="rowsNumber"
-    >
-    </textarea>
-    <input 
-        v-else
-        ref='input'
-        class="content input"
-        :type="typeComputed"
-        :maxlength="length"
-        v-model="privateContent"
-        @keydown.esc="synchroVmodel(false)"
-        @keypress.enter="synchroVmodel(true)"
-        @blur="synchroVmodel(saveOnBlur)"
-    />
 </template>
 
 <script>
@@ -67,7 +71,7 @@
  */
 
 export default {
-    name: 'EditableLabel',
+    name: 'EditableField',
     model:{
         prop:'content',
         event:'change'
@@ -75,7 +79,7 @@ export default {
     data: function () {
         return {
             editionMode: false,
-            privateContent: this.content
+            privateContent: this.content == "" ? this.default : this.content,
         }
     },
     props: {
@@ -86,9 +90,15 @@ export default {
         saveOnBlur: { default : true },
         rows: { default : undefined },
         length: { default : ''},
-        editOnSingleClick: { default : true}
+        editOnSingleClick: { default : true},
+        label: { default: "Editable field : " },
+        default: { default: ""}
+
     },
     computed: {
+        computedClass() {
+            return this.privateContent == this.default ? 'placeHolderSytle' : ''
+        },
         typeComputed() {
             if (this.format == 'date') return 'date'
             else return 'text'
@@ -110,9 +120,10 @@ export default {
     methods: {
         makeItEditable(eventType) {
             if (eventType == 'singleClick') this.$emit('click')
-
             if ((eventType == 'singleClick' && this.editOnSingleClick) || eventType=='dblClick') {
-                this.editionMode=(true && !this.locked)
+                let newMode = true && !this.locked
+                if (newMode && this.privateContent == this.default) this.privateContent==''
+                this.editionMode=(newMode)
                 this.$nextTick(()=>{
                     if (this.editionMode) this.$refs.input.focus()
                 })
@@ -120,6 +131,7 @@ export default {
         },
         synchroVmodel(applyChanges) {
             if ((this.privateContent != this.content) && applyChanges) {
+                if (this.privateContent=="") this.privateContent = this.default
                 this.$emit('change', this.privateContent)
             } else this.privateContent = this.content
             this.editionMode = false
@@ -134,11 +146,29 @@ export default {
 </script>
  
 <style scoped lang="scss">
+.editable-field{
+    display: flex;
+    white-space: nowrap;
+    overflow: visible;
+    flex-wrap: nowrap;
+    .label {
+        margin-right: 10px;
+    }
+}
+
+.placeHolderSytle{
+    color: #888;
+}
+
 .content{
     height: 100%;
     min-height: 20px;
     display: flex;
     align-items: center;
     cursor: pointer;    
+}
+
+input { 
+    width: 100%;
 }
 </style>

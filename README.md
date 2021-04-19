@@ -3,7 +3,7 @@
 This project aims to developp often used features as vue components.  
 Available now:  
 - Checkboxes
-- Editable labels
+- Editable fields
 - Thumbnail - props :  
     - content - default: "..." 
     - visible - default: true // visibility  
