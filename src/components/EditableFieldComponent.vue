@@ -52,6 +52,7 @@
 /**
  *  Champ de texte editable par double clic. 
  *  Options :  
+ *      - label: label displayed before the editable field
  *      - editOnSingleClick: true (default)/ false. When false, double click enable edit mode. When true, single click does.
  *      - locked : true / false. Prevent from enabling edit mode
 *       - length = max length of input (text)
@@ -71,7 +72,7 @@
  */
 
 export default {
-    name: 'EditableField',
+    name: 'EditableFieldComponent',
     model:{
         prop:'content',
         event:'change'

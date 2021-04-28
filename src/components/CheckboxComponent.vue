@@ -8,8 +8,8 @@
             type="checkbox" 
             v-model="privateChecked" 
             :id="idComputed" 
-            @change="update"
             :disabled="disabled"
+            @change='update'
         >
         <label :for="idComputed">{{ label }}</label>
     </div>
@@ -22,9 +22,10 @@ export default {
         prop: 'checked',
         event: 'change'
     },
-    data: ()=>{
+    data: function () {
         return { 
-            salt: undefined
+            salt: undefined,
+            privateChecked: this.checked
         }
     },
     props: {
@@ -49,9 +50,6 @@ export default {
             if (this.salt == undefined) this.salt = Math.round(Math.random()*1000000)
             return this.salt
         }
-    },
-    created: function () {
-        this.privateChecked = this.checked
     }
 }
 </script>
@@ -67,6 +65,7 @@ $backGroundColor: #FFF;
   display: flex;
   align-items: center;
   justify-content: left;
+  display: inline-block;
   height: 100%;
 }
 

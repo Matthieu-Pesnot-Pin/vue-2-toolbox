@@ -2,11 +2,13 @@
   <div class='radio'>
       <input 
         type="radio" 
-        :name="radioGroup"
-        :id="idComputed()" 
-        :value="value" 
+        :name="group"
+        :id="idComputed" 
+        :value="value"
+        v-model="privateModel"
         @change="$emit('change', value)"
-      /><label :for="idComputed()">{{ label }}</label>
+      />
+      <label :for="idComputed">{{ label }}</label>
   </div>
 </template>
 
@@ -18,7 +20,7 @@ export default {
         event: 'change'
     },
     props: {
-        radioGroup: {default: 'defaultGroupe'}, // The group among which the radio is picked by user
+        group: {default: 'defaultGroupe'}, // The group among which the radio is picked by user
         vModelValue: {default: 'empty'},        // prop only used for v-model
         label: { default: 'empty'},             // the displayed label
         value: {                                // the value sent to v-model or to @change event
@@ -27,28 +29,29 @@ export default {
             }
         }
     },
-    data: ()=>{
+    data: function () {
         return { 
             salt: undefined,
-            privateValue: 'empty'
+            privateModel: this.vModelValue
         }
     },
     methods: {
-        update(){
-            this.$emit('change', this.privateValue);
-        },
         idSalt() {
             if (this.salt == undefined) this.salt = Math.round(Math.random()*1000000)
             return this.salt
+        },
+    },
+    computed: {
+        labelComputed() {
+            return this.label.replace(/ /g, '-')
         },
         idComputed() {
             return 'radio-' + this.labelComputed + '-' + this.idSalt()
         }
     },
-    computed: {
-        labelComputed() {
-            return this.label.replace(/ /g, '-')
-        }
+    mounted: function() {
+        // obj = "{a: 10}"
+        console.log();
     }
 }
 </script>
@@ -61,3 +64,5 @@ input {
     margin-right: 3px;
 }
 </style>
+
+ 
