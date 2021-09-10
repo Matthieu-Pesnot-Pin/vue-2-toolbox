@@ -66,7 +66,7 @@
  *          - textarea : 
  *              - displays a textarea input
  *              - default rows number : 5, change it with rows="n"
- *              - if rows isn't set, textarea's size will adapte to the text length
+ *              - if rows isn't set, textarea's size will adapt to the text length
  * 
  * 
  */

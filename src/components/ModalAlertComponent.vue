@@ -1,8 +1,14 @@
 <template>
-  <div class="composant-modale-alert">
+  <div class="composant-modal-alert">
     <p class="message" v-html="params.message"></p>
     <div class="separateur1"></div>
-    <button ref="OKdiv" v-if='!params.displayLoader'  @click="quitterFenetreModale" @keypress.enter="quitterFenetreModale" class="frame-ok" >
+    <button
+      ref="OKdiv"
+      v-if="!params.displayLoader"
+      @click="quitterFenetreModale"
+      @keypress.enter="quitterFenetreModale"
+      class="frame-ok"
+    >
       <p class="bouton-ok">{{ params.captionOk }}</p>
     </button>
     <div v-else class="loader">
@@ -12,34 +18,35 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { Modal } from "./Modal";
+
 export default {
-    name: 'modalAlertComponent',
-    props: {
-      params: {
-        message: { default: 'Informations' },
-        displayLoader: { default: false },
-        captionOk: { default: 'Ok' }
-      }
+  name: "modalAlertComponent",
+  props: {
+    params: {
+      message: { default: "Informations" },
+      displayLoader: { default: false },
+      captionOk: { default: "Ok" },
     },
-    methods: {
-      ...mapMutations(['defineModalVisibility', 'definirContenuModale']),
-      quitterFenetreModale() {
-        if (this.params.waitingContent != undefined) this.definirContenuModale(this.params.waitingContent)
-        else this.defineModalVisibility(false)
-        if (this.params.callBack != undefined) this.params.callBack()
-      }
+  },
+  methods: {
+    quitterFenetreModale() {
+      if (this.params.waitingContent != undefined && this.params.track)
+        Modal.setContent(this.params.waitingContent);
+      else Modal.hide();
+      if (this.params.callBack != undefined) this.params.callBack();
     },
-    mounted: function() {
-      if (this.params.captionOk == undefined) this.params.captionOk = 'Ok'
-      console.log('this.params.captionOk', this.params.captionOk)
-    }
-}
+  },
+  mounted: function() {
+    if (this.params.captionOk == undefined) this.params.captionOk = "Ok";
+    this.$forceUpdate();
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 @import "src/css/modal.scss";
-.composant-modale-alert {
+.composant-modal-alert {
   background-color: $background-color;
   border-radius: 10px;
   padding: 24px 23px 23px 24px;
@@ -76,12 +83,10 @@ export default {
   padding: 8px 16px;
   margin-top: 20px;
   box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.4);
-
 }
 .bouton-ok {
   @include typo-modal;
   color: $couleur-texte-blanc;
- 
 }
 .loader {
   height: 13px;
@@ -91,7 +96,6 @@ export default {
   text-align: center;
   margin: 10px 0 20px 0;
 }
-
 
 .lds-dual-ring {
   display: inline-block;

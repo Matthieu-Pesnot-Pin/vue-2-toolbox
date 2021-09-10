@@ -18,9 +18,9 @@
               </div>
 
               <div class="breadcrumb">
-                <CheckboxComponent
-                  v-model="disableDemoCheckBox"
+                <SwitchIt
                   label="Disable checkbox"
+                  v-model="disableDemoCheckBox"
                 />
               </div>
               <div class="breadcrumb">
@@ -39,7 +39,7 @@
             <div class="card-body">
               <div>Thumbnail text :</div>
               <EditableFieldComponent
-                v-model="labelContent"
+                v-model="Thumbnail.content"
                 @change="thumbnailVisibility = true"
               />
             </div>
@@ -73,23 +73,28 @@
                 <RadioComponent
                   class="radio-component"
                   label="Neutral"
+                  value="neutral"
                   group="thumbnailType"
-                  v-model="thumbnailType"
+                  v-model="Thumbnail.thumbnailType"
                 />
                 <RadioComponent
                   class="radio-component"
                   label="Success"
+                  value="success"
                   group="thumbnailType"
-                  v-model="thumbnailType"
+                  v-model="Thumbnail.thumbnailType"
                 />
                 <RadioComponent
                   class="radio-component"
                   label="Error"
+                  value="error"
                   group="thumbnailType"
-                  v-model="thumbnailType"
+                  v-model="Thumbnail.thumbnailType"
                 />
               </div>
-              <button @click="thumbnailVisibility = true">
+              <SwitchIt v-model="Thumbnail.autoHide" label="Auto hide" />
+              <SwitchIt v-model="Thumbnail.closeCross" label="Close cross" />
+              <button @click="Thumbnail.show">
                 Show thumbnail
               </button>
             </div>
@@ -151,41 +156,33 @@
         </div>
       </div>
     </div>
-    <ThumbnailComponent
-      v-model="thumbnailVisibility"
+    <!-- v-model="thumbnailVisibility"
       :content="labelContent"
       :thumbnailType="thumbnailType"
       autoHide="true"
       closeCross="true"
       autoHideTime="2000"
-      position="center"
-    />
-    <ModalContainerComponent
-      v-model="modale.visible"
-      :content="modale.content"
-    />
-    <!-- v-on:modale-event='modaleFetch' -->
+      position="center" -->
+    <ThumbnailComponent />
+    <ModalComponent />
   </div>
 </template>
 
 <script>
 import CheckboxComponent from "./components/CheckboxComponent";
 import EditableFieldComponent from "./components/EditableFieldComponent";
-import ThumbnailComponent from "./components/ThumbnailComponent";
 import RadioComponent from "./components/RadioComponent";
-import ModalContainerComponent from "./components/ModalContainerComponent";
-import { mapActions, mapState } from "vuex";
-
-const STATES_TO_MAP = ["modale"];
+import SwitchIt from "./components/SwitchIt";
+import ThumbnailComponent, { Thumbnail } from "./components/ThumbnailComponent";
+import ModalComponent, { Modal } from "./components/Modal";
 
 export default {
   name: "App",
   data: () => {
     return {
+      switchTest: false,
+      Thumbnail,
       checked: false,
-      labelContent: "Thumbnail text",
-      thumbnailVisibility: false,
-      thumbnailType: "Neutral",
       radioValue: "One",
       disableDemoCheckBox: false,
       infoIfDisabled: "Test",
@@ -194,6 +191,7 @@ export default {
       captionYes: "Yes",
       captionButton: "Ok",
       modalAlertType: "Button",
+      Modal,
     };
   },
   components: {
@@ -201,50 +199,54 @@ export default {
     EditableFieldComponent,
     ThumbnailComponent,
     RadioComponent,
-    ModalContainerComponent,
+    ModalComponent,
+    SwitchIt,
   },
-  computed: {
-    ...mapState([STATES_TO_MAP]),
-  },
+  computed: {},
   methods: {
-    ...mapActions(["modalAlert", "modalYesNo", "modalComponent", "modalHide"]),
     displayModal() {
       if (this.modalType == "Alert") {
         let config;
         if (this.modalAlertType == "Button") {
           config = {
-            message: "Here you are !",
+            message: "Hello world !",
             allowQuitOnClick: true,
             captionOk: this.captionButton,
           };
         } else if (this.modalAlertType == "Loader") {
           config = {
             message: "Loader for 2 seconds...",
-            allowQuitOnClick: true,
+            allowQuitOnClick: false,
             displayLoader: true,
           };
           setTimeout(() => {
-            this.modalHide();
+            Modal.hide();
           }, 2000);
         }
-        return this.modalAlert(config);
+        return Modal.alert(config);
       }
 
       if (this.modalType == "Yes / No")
-        return this.modalYesNo({
+        return Modal.yesNo({
           message: "What do you want ?",
           captionYes: this.captionYes,
           captionNo: this.captionNo,
           callBackYes: () => {
-            this.modalAlert("You clicked " + this.captionYes + " !");
+            Modal.alert("You clicked " + this.captionYes + " !");
           },
           callBackNo: () => {
-            this.modalAlert("You clicked " + this.captionNo + " !");
+            Modal.alert("You clicked " + this.captionNo + " !");
           },
         });
     },
   },
-  mounted: function() {},
+  mounted: function() {
+    Thumbnail.setOptions({
+      closeCross: true,
+      autoHideTime: 5000,
+      position: "center",
+    });
+  },
 };
 </script>
 
@@ -266,5 +268,10 @@ export default {
 
 .editable-field {
   width: 100%;
+}
+
+.switch-it-component {
+  width: 180px;
+  margin-bottom: 10px;
 }
 </style>
